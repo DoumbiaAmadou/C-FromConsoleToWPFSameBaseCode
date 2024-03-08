@@ -1,31 +1,53 @@
-﻿using System;
-using System.CodeDom.Compiler;
-using System.Collections;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Runtime.InteropServices;
-using HouseLib.Tenants;
+﻿
+using System.Text;
+using HouseLib.Global;
 
 namespace HouseLib.Rents
 {
-  public class Rent : IRentOpeartaion
+  public class Rent : IRentOpeartaion, INameProperty, IDuplicable<Rent>
   {
-    private Appartement Appartement;
-    private Tenant Tenant;
+    private readonly int appartementId;
+    private readonly int tenantId;
     private readonly DateOnly EnterDate;
     private DateOnly ExitDate;
-    private readonly decimal SecurityDeposit;
-    private readonly Stack<Amount> Amounts = new Stack<Amount>();
-    private readonly IList<RentBill> RentBill = new List<RentBill>();
-    private readonly IList<Intervention> Interventions = new List<Intervention>();
 
-    public Rent(Appartement apt, Tenant tenant, DateOnly startDate, decimal amount, decimal expense, decimal securityDeposit)
+    private readonly decimal SecurityDeposit;
+    public readonly Stack<Amount> Amounts = new Stack<Amount>();
+    private readonly Dictionary<string, RentBill> RentBill = new Dictionary<string, RentBill>();
+    private readonly IList<Intervention> Interventions = new List<Intervention>();
+    public static int autoIncrement = 1;
+    public int Id { get; }
+
+    public string Name { get; set; } = "Name";
+
+    public Rent(int appartementId, int tenantId, DateOnly startDate, decimal amount, decimal expense, decimal securityDeposit)
     {
-      Tenant = tenant;
-      Appartement = apt;
+      Id = autoIncrement++;
+      this.appartementId = appartementId;
+      this.tenantId = tenantId;
       EnterDate = startDate;
       Amounts.Push(new Amount(startDate, amount, expense));
       SecurityDeposit = securityDeposit;
+    }
+
+    public Rent(Rent x)
+    {
+      Id = x.Id;
+      appartementId = x.appartementId;
+      tenantId = x.tenantId;
+      EnterDate = x.EnterDate;
+
+      foreach (var a in x.Amounts)
+      {
+        Amounts.Push(new Amount(a.startDate, a.fixedPrice,
+         a.expense));
+      }
+
+      //not Clone for check
+      ExitDate = x.ExitDate;
+      RentBill = x.RentBill;
+      Interventions = x.Interventions;
+
     }
 
     public decimal GenerateAmount(DateOnly start, DateOnly end)
@@ -84,24 +106,45 @@ namespace HouseLib.Rents
 
     public void GenerateFacturation(int year, int month)
     {
+      // idempotence
+      if (RentBill.ContainsKey($"{year}-{month}"))
+        return;
+
       var start = new DateOnly(year, month, 1);
       var end = new DateOnly(year, month, DateTime.DaysInMonth(year, month));
-      AddBill(start, end);
+      RentBill.TryAdd($"{year}-{month}", AddBill(start, end));
 
     }
-    private void AddBill(DateOnly start, DateOnly end)
+    private RentBill AddBill(DateOnly start, DateOnly end)
     {
-      var bill = new RentBill
+      return new RentBill
       {
+        RentId = Id,
         end = end,
         start = start,
+        Ref = $"FACT_{end.Year}-{end.Month}__{Guid.NewGuid().ToString().Substring(0, 10)}",
         Name = $"Faturation du {end.ToLongDateString()}",
         total = GenerateAmount(start, end),
       };
-      RentBill.Add(bill);
-      Console.WriteLine($"=> AddBill (){Environment.NewLine}");
-      Console.WriteLine(bill);
+
+
+      //Console.WriteLine(bill);
     }
+
+    public Rent Clone()
+    {
+      return new Rent(this);
+    }
+    public IList<RentBill> GetAllBill()
+    {
+      return RentBill.Values.ToList();
+    }
+    public string DisplayLastBill()
+    {
+      StringBuilder s = new();
+      return RentBill.Last().Value.ToString();
+    }
+
   }
 }
 

@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Xml.Linq;
+using HouseLib.Global;
+
 namespace HouseLib
 {
-  public class Appartement : INameProperty
+  public class Appartement : INameProperty, IDuplicable<Appartement>
   {
     public int Id { get; }
     public string Name { get; set; }
@@ -9,6 +12,7 @@ namespace HouseLib
     public readonly string Adress;
     public readonly int NbRooms;
     public readonly decimal Superficy;
+
 
     public Appartement(int id, string name, string adress, int nbRooms, decimal superficy)
     {
@@ -19,6 +23,20 @@ namespace HouseLib
       Superficy = superficy;
     }
 
+    public Appartement(Appartement appartement)
+    {
+      Id = appartement.Id;
+      Name = appartement.Name;
+      Adress = appartement.Adress;
+      NbRooms = appartement.NbRooms;
+      Superficy = appartement.Superficy;
+    }
+
+
+    public Appartement Clone()
+    {
+      return new Appartement(this);
+    }
   }
 }
 

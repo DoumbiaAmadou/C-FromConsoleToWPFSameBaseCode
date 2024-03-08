@@ -6,5 +6,6 @@
     public void AddExtraExpense(Intervention intervention);
     public void DeclareRestitutionDate(DateOnly RestitionDate);
     public void BuildRestitution();
+    public string DisplayLastBill();
   }
 }
