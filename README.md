@@ -4,7 +4,7 @@ Same Base Code with Library Project, DI and Services use in different Container
 to build Desktop, Web and Console Application
 
 Console OutPut
-'''  
+
 ==========
 Rent House
 ==========
@@ -84,5 +84,3 @@ amount:800Expense:89
 
 
          <<<<<<<          End     >>>>>>>
-
-'''
