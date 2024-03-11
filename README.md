@@ -1,7 +1,7 @@
 # CS FromConsoleToWPFSameBaseCode
 
 Same Base Code with Library Project, DI and Services use in different Container
-to build Destop, Web and Console Application
+to build Desktop, Web and Console Application
 
 Console OutPut
 '''  
@@ -77,7 +77,7 @@ amount:800Expense:89
         |ID             |                                    10 |
         |RentID         |                                    13 |
         |Ref            |                FACT_2024-3__5508b55d-9|
-        |Name           |       Faturation du lundi 11 mars 2024|
+        |Name           |       Facturation du lundi 11 mars 2024|
         |Start Date     |                             01/03/2024|
         |End Date       |                             11/03/2024|
         |Total          |                                    889|
