@@ -10,15 +10,23 @@
     <None Remove="House\" />
     <None Remove="Rents\" />
     <None Remove="Tenants\" />
-    <None Remove="Repository\" />
     <None Remove="Global\" />
+    <None Remove="Data\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="House\" />
     <Folder Include="Rents\" />
     <Folder Include="Tenants\" />
     <Folder Include="Logging\" />
-    <Folder Include="Repository\" />
     <Folder Include="Global\" />
+    <Folder Include="Data\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.16" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.16">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.16" />
   </ItemGroup>
 </Project>

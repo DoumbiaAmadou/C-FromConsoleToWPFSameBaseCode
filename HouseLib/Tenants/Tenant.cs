@@ -1,26 +1,17 @@
 ﻿
+using System.ComponentModel.DataAnnotations.Schema;
 using HouseLib.Global;
 
 namespace HouseLib.Tenants
 {
-  public class Tenant : INameProperty, IDuplicable<Tenant>
+  public class Tenant : INameProperty
   {
-    public int Id { get; }
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; set; }
 
-    public string Name { get; set; }
+    public string Name { get; set; } = "";
 
-    public readonly DateOnly DateOfbirth;
-    public Tenant(int id, string name, DateOnly dateOfbirth)
-    {
-      Id = id;
-      Name = name;
-      DateOfbirth = dateOfbirth;
-    }
-
-    public Tenant Clone()
-    {
-      return new Tenant(Id, Name, DateOfbirth);
-    }
+    public DateOnly DateOfbirth { get; set; }
   }
 }
 

@@ -1,58 +1,33 @@
 ﻿
+using System.Linq;
 using System.Text;
 using HouseLib.Global;
 
 namespace HouseLib.Rents
 {
-  public class Rent : IRentOpeartaion, INameProperty, IDuplicable<Rent>
+  public class Rent : IRentOpeartaion, INameProperty
   {
-    private readonly int appartementId;
-    private readonly int tenantId;
-    private readonly DateOnly EnterDate;
-    private DateOnly ExitDate;
+    public int AppartementId { get; set; }
+    public int TenantId { get; set; }
+    public DateOnly EnterDate { get; set; }
+    public DateOnly ExitDate { get; set; }
 
-    private readonly decimal SecurityDeposit;
-    public readonly Stack<Amount> Amounts = new Stack<Amount>();
-    private readonly Dictionary<string, RentBill> RentBill = new Dictionary<string, RentBill>();
-    private readonly IList<Intervention> Interventions = new List<Intervention>();
-    public static int autoIncrement = 1;
-    public int Id { get; }
+    public decimal SecurityDeposit { get; set; }
+    public List<Amount> Amounts { get; set; } = new List<Amount>();
+    public List<RentBill> RentBills { get; set; } = new List<RentBill>();
+    public IList<Intervention> Interventions { get; set; } = new List<Intervention>();
 
+    public int Id { get; set; }
     public string Name { get; set; } = "Name";
 
-    public Rent(int appartementId, int tenantId, DateOnly startDate, decimal amount, decimal expense, decimal securityDeposit)
-    {
-      Id = autoIncrement++;
-      this.appartementId = appartementId;
-      this.tenantId = tenantId;
-      EnterDate = startDate;
-      Amounts.Push(new Amount(startDate, amount, expense));
-      SecurityDeposit = securityDeposit;
-    }
 
-    public Rent(Rent x)
-    {
-      Id = x.Id;
-      appartementId = x.appartementId;
-      tenantId = x.tenantId;
-      EnterDate = x.EnterDate;
-
-      foreach (var a in x.Amounts)
-      {
-        Amounts.Push(new Amount(a.startDate, a.fixedPrice,
-         a.expense));
-      }
-
-      //not Clone for check
-      ExitDate = x.ExitDate;
-      RentBill = x.RentBill;
-      Interventions = x.Interventions;
-
-    }
 
     public decimal GenerateAmount(DateOnly start, DateOnly end)
     {
-
+      if (Amounts.Count < 1)
+      {
+        return 0;
+      }
       var stackCopy = new Stack<Amount>(Amounts);
       decimal total = 0;
       Amount amount;
@@ -60,7 +35,6 @@ namespace HouseLib.Rents
       do
       {
         amount = stackCopy.Pop();
-
         if (amount.startDate > start)
         {
           total += (amount.GlobalFee() * (lastdate.Day - amount.startDate.Day) / (end.Day));
@@ -68,7 +42,7 @@ namespace HouseLib.Rents
         }
         else
         {
-          if (lastdate != end.AddDays(1))
+          if (lastdate.CompareTo(end.AddDays(1)) != 0)
           {
             total += (amount.GlobalFee() * (lastdate.Day - start.Day) / (end.Day));
           }
@@ -84,7 +58,7 @@ namespace HouseLib.Rents
     }
     public void UpdateAmount(Amount amount)
     {
-      Amounts.Push(amount);
+      Amounts.Add(amount);
     }
     public void AddExtraExpense(Intervention intervention)
     {
@@ -104,19 +78,24 @@ namespace HouseLib.Rents
       }
     }
 
-    public void GenerateFacturation(int year, int month)
+    public void GenerateFacturation(DateOnly date)
     {
+      int year = date.Year;
+      int month = date.Month;
       // idempotence
-      if (RentBill.ContainsKey($"{year}-{month}"))
+      if (RentBills.FirstOrDefault(x => x.IsFacturationDate(date)) != null)
+      {
         return;
+      }
 
-      var start = new DateOnly(year, month, 1);
+      var start = new DateOnly(date.Year, date.Month, 1);
       var end = new DateOnly(year, month, DateTime.DaysInMonth(year, month));
-      RentBill.TryAdd($"{year}-{month}", AddBill(start, end));
+      RentBills.Add(AddBill(start, end));
 
     }
-    private RentBill AddBill(DateOnly start, DateOnly end)
+    public RentBill AddBill(DateOnly start, DateOnly end)
     {
+
       return new RentBill
       {
         RentId = Id,
@@ -126,23 +105,16 @@ namespace HouseLib.Rents
         Name = $"Faturation du {end.ToLongDateString()}",
         total = GenerateAmount(start, end),
       };
-
-
-      //Console.WriteLine(bill);
     }
 
-    public Rent Clone()
-    {
-      return new Rent(this);
-    }
+
     public IList<RentBill> GetAllBill()
     {
-      return RentBill.Values.ToList();
+      return RentBills;
     }
     public string DisplayLastBill()
     {
-      StringBuilder s = new();
-      return RentBill.Last().Value.ToString();
+      return RentBills.Last().ToString();
     }
 
   }

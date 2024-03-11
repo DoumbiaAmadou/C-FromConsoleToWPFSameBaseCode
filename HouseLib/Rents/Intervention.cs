@@ -2,11 +2,12 @@
 {
   public class Intervention
   {
-    public DateOnly Date;
-    public string Ref = "";
-    public string CompagnyName = "Internal";
-    public decimal Fee;
-    public decimal tax;
-    public float TaxePourcentage;
+    public int Id { get; set; }
+    public DateOnly Date { get; set; }
+    public string Ref { get; set; } = "";
+    public string CompagnyName { get; set; } = "Internal";
+    public decimal Fee { get; set; }
+    public decimal Tax { get; set; }
+    public float TaxePourcentage { get; set; }
   }
 }

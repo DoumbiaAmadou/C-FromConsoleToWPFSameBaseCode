@@ -2,7 +2,7 @@
 {
   public interface IRentOpeartaion
   {
-    public void GenerateFacturation(int years, int mounth);
+    public void GenerateFacturation(DateOnly date);
     public void AddExtraExpense(Intervention intervention);
     public void DeclareRestitutionDate(DateOnly RestitionDate);
     public void BuildRestitution();

@@ -4,25 +4,28 @@ namespace HouseLib.Rents
 {
   public class RentBill : INameProperty
   {
-    private static int autoIncrement = 1;
-    public int Id { get; }
+
+    public int Id { get; set; }
+    public int RentId { get; set; }
+
     public string Name { get; set; } = "Facture";
     public string Ref { get; set; } = "";
-    public DateOnly start;
-    public DateOnly end;
-    public decimal total;
+    public DateOnly start { get; set; }
+    public DateOnly end { get; set; }
+    public decimal total { get; set; }
 
-    public int RentId;
-
-    public RentBill()
+    public bool IsFacturationDate(DateOnly date)
     {
-      Id = autoIncrement++;
+      return (start.Year == date.Year && start.Month == date.Month);
     }
+
     public override string ToString()
     {
       StringBuilder s = new();
       s.Append($"\t{new string('_', 56)}{Environment.NewLine}");
-      s.Append($"\t|{"RentID",-15}|{Id,38} |{Environment.NewLine}");
+      s.Append($"\t|{"ID",-15}|{Id,38} |{Environment.NewLine}");
+      s.Append($"\t|{new string('-', 55)}|{Environment.NewLine}");
+      s.Append($"\t|{"RentID",-15}|{RentId,38} |{Environment.NewLine}");
       s.Append($"\t|{new string('-', 55)}|{Environment.NewLine}");
       s.Append($"\t|{"Ref",-15}|{Ref,39}|{Environment.NewLine}");
       s.Append($"\t|{new string('-', 55)}|{Environment.NewLine}");
