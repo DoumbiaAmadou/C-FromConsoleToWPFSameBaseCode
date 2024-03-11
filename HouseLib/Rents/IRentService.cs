@@ -4,7 +4,7 @@ namespace HouseLib.Rents
   public interface IRentService
   {
     public (bool isCreacted, int Id) CreateContract(int appartementId, int tenantId, DateOnly startDate, decimal amount, decimal expense, decimal securityDeposit);
-    public bool DeclareIntervention();
+
     public bool RegistreRestitutionDate(int rentId, DateOnly date);
     public bool CreateFacture(int rentId, DateOnly date);
     public bool GenerateExitBill(int rentId, DateOnly exitDate);
@@ -15,6 +15,7 @@ namespace HouseLib.Rents
     public int AddNewAppartemen(string adress, string name, int nbRoms, decimal superficy);
     public int AddNewTenant(string name, DateOnly date);
     public void GenerateFacturation(int year, int month);
-    bool AddIntervention(int rentId, DateOnly date, string reference, string compagnyName, decimal fee, decimal tax);
+    bool DeclareIntervention(int rentId, DateOnly date, string reference, string compagnyName, decimal fee, decimal tax);
+
   }
 }

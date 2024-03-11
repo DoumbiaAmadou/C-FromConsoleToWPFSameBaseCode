@@ -102,7 +102,7 @@ namespace HouseLib.Rents
         end = end,
         start = start,
         Ref = $"FACT_{end.Year}-{end.Month}__{Guid.NewGuid().ToString().Substring(0, 10)}",
-        Name = $"Faturation du {end.ToLongDateString()}",
+        Name = $"Facturation du {end.ToLongDateString()}",
         total = GenerateAmount(start, end),
       };
     }

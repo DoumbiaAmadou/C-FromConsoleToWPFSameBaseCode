@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections;
+using System.ComponentModel.DataAnnotations;
 using HouseLib;
 using HouseLib.Data;
 using HouseLib.Logging;
@@ -41,6 +42,7 @@ public class RentService : IRentService
     };
     rentContext.Appartements.Add(newAppatement);
     rentContext.Save();
+    loggerService.Log($"Appartement Id-{{{newAppatement.Id}}} added!");
     return newAppatement.Id;
   }
 
@@ -74,23 +76,28 @@ public class RentService : IRentService
     rent.Amounts.Add(newAmount);
     rentContext.Rents.Add(rent);
     rentContext.Save();
-    loggerService.Log($"contract {{{rent.Id}}} created! {Environment.NewLine} " +
+    loggerService.Log($"contract {{{rent.Id}}} created! " +
+     $"{Environment.NewLine} " +
      $"amount:{newAmount.fixedPrice}" +
-     $"Expense:{newAmount.expense}}} ", LogLevel.INFO);
+     $"Expense:{newAmount.expense}", LogLevel.INFO);
     return (true, rent.Id);
   }
 
-  public bool DeclareIntervention()
-  {
-    throw new NotImplementedException();
-  }
+
   public IList<RentBill> LastFacture(int rentId, DateOnly start, DateOnly endDate)
   {
     throw new NotImplementedException();
   }
-  public IList<RentBill> SearchBill(int rentId, DateOnly start, DateOnly endDate)
+  public IList<RentBill> SearchBill(int rentId, DateOnly startDate, DateOnly endDate)
   {
-    throw new NotImplementedException();
+    var rent = rentContext.Rents.Include(x => x.RentBills).Include(x => x.Amounts).Include(x => x.Interventions).FirstOrDefault(x => x.Id == rentId);
+
+    if (rent == null)
+    {
+      return new List<RentBill>();
+    }
+
+    return rent.RentBills.Where(x => x.start.CompareTo(startDate) >= 0 && x.start.CompareTo(endDate) >= 0).ToList();
   }
 
   public bool CreateFacture(int rentId, DateOnly date)
@@ -167,7 +174,7 @@ public class RentService : IRentService
     }
   }
 
-  public bool AddIntervention(int rentId, DateOnly date, string reference, string CompagnyName, decimal fee, decimal tax)
+  public bool DeclareIntervention(int rentId, DateOnly date, string reference, string CompagnyName, decimal fee, decimal tax)
   {
     var rent = rentContext.Rents.Include(x => x.Interventions).FirstOrDefault(x => x.Id == rentId);
     if (rent == null)
