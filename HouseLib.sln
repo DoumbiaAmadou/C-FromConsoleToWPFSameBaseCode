@@ -12,7 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestConsole", "TestConsole\TestConsole.csproj", "{E2B04DF5-C655-467A-9BB3-27D85878AC86}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestHouseLib", "TestHouseLib\TestHouseLib.csproj", "{3898FDB7-06CD-4542-830B-6662425CAED9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HouseLib.Test", "HouseLibTest\HouseLib.Test.csproj", "{3898FDB7-06CD-4542-830B-6662425CAED9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

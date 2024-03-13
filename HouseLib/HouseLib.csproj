@@ -12,6 +12,7 @@
     <None Remove="Tenants\" />
     <None Remove="Global\" />
     <None Remove="Data\" />
+    <None Remove="Extension\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="House\" />
@@ -20,6 +21,7 @@
     <Folder Include="Logging\" />
     <Folder Include="Global\" />
     <Folder Include="Data\" />
+    <Folder Include="Extension\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.16" />

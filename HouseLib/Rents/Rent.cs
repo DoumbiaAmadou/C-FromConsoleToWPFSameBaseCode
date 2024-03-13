@@ -1,6 +1,7 @@
 ﻿
 using System.Linq;
 using System.Text;
+using HouseLib.Extension;
 using HouseLib.Global;
 
 namespace HouseLib.Rents
@@ -20,39 +21,40 @@ namespace HouseLib.Rents
     public int Id { get; set; }
     public string Name { get; set; } = "Name";
 
-
-
     public decimal GenerateAmount(DateOnly start, DateOnly end)
     {
-      if (Amounts.Count < 1)
+      //calculate opnly One Month and Amount list not Empty.
+      if (Amounts.Count < 1 || start.Year != end.Year || end.Month != end.Month)
       {
-        return 0;
+        throw new InvalidOperationException("Amount List is empty or StartDate and endDate in in different Month");
+
       }
       var stackCopy = new Stack<Amount>(Amounts);
       decimal total = 0;
       Amount amount;
-      var lastdate = end.AddDays(1);
+      var lastdate = end;
       do
       {
         amount = stackCopy.Pop();
         if (amount.startDate > start)
         {
-          total += (amount.GlobalFee() * (lastdate.Day - amount.startDate.Day) / (end.Day));
+          var t = lastdate.Soustract(amount.startDate) * 1.0 / DateTime.DaysInMonth(end.Year, end.Month);
+          total += amount.GlobalFee() * lastdate.Soustract(amount.startDate) / DateTime.DaysInMonth(end.Year, end.Month);
           lastdate = amount.startDate;
         }
         else
         {
-          if (lastdate.CompareTo(end.AddDays(1)) != 0)
+          if (lastdate.CompareTo(end) != 0)
           {
-            total += (amount.GlobalFee() * (lastdate.Day - start.Day) / (end.Day));
+            total += amount.GlobalFee()
+              * lastdate.Soustract(start)
+              / DateTime.DaysInMonth(end.Year, end.Month);
           }
           else
           {
             total += amount.GlobalFee();
           }
-
         }
-
       } while (amount.startDate > start);
       return total;
     }
@@ -64,18 +66,17 @@ namespace HouseLib.Rents
     {
       Interventions.Add(intervention);
     }
-
     public void DeclareRestitutionDate(DateOnly RestitionDate)
     {
       ExitDate = RestitionDate;
     }
-
-    public void BuildRestitution()
+    public RentBill BuildRestitutionBill()
     {
       if (ExitDate != DateOnly.MinValue)
       {
-        AddBill(ExitDate.AddDays(-ExitDate.Day + 1), ExitDate.AddDays(-ExitDate.Day).AddMonths(1));
+        return AddBill(ExitDate.AddDays(-ExitDate.Day + 1), ExitDate.AddDays(-ExitDate.Day).AddMonths(1));
       }
+      throw new Exception("No ExitDateFound");
     }
 
     public void GenerateFacturation(DateOnly date)
