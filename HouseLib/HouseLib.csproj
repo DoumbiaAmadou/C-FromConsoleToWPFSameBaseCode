@@ -13,6 +13,7 @@
     <None Remove="Global\" />
     <None Remove="Data\" />
     <None Remove="Extension\" />
+    <None Remove="Services\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="House\" />
@@ -22,6 +23,7 @@
     <Folder Include="Global\" />
     <Folder Include="Data\" />
     <Folder Include="Extension\" />
+    <Folder Include="Services\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.16" />
@@ -29,6 +31,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.16" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="8.0.0" />
+     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.16" />
   </ItemGroup>
 </Project>

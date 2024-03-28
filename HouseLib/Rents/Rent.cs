@@ -1,13 +1,6 @@
-﻿
-using System.Linq;
-using System.Text;
-using HouseLib.Extension;
-using HouseLib.Global;
-
-namespace HouseLib.Rents
-{
-  public class Rent : IRentOpeartaion, INameProperty
-  {
+﻿using HouseLib.Extension;
+namespace HouseLib.Rents {
+  public class Rent : IRentOpeartaion, INameProperty {
     public int AppartementId { get; set; }
     public int TenantId { get; set; }
     public DateOnly EnterDate { get; set; }
@@ -21,11 +14,9 @@ namespace HouseLib.Rents
     public int Id { get; set; }
     public string Name { get; set; } = "Name";
 
-    public decimal GenerateAmount(DateOnly start, DateOnly end)
-    {
+    public decimal GenerateAmount(DateOnly start, DateOnly end) {
       //calculate opnly One Month and Amount list not Empty.
-      if (Amounts.Count < 1 || start.Year != end.Year || end.Month != end.Month)
-      {
+      if (Amounts.Count < 1 || start.Year != end.Year || end.Month != end.Month) {
         throw new InvalidOperationException("Amount List is empty or StartDate and endDate in in different Month");
 
       }
@@ -33,59 +24,47 @@ namespace HouseLib.Rents
       decimal total = 0;
       Amount amount;
       var lastdate = end;
-      do
-      {
+      do {
         amount = stackCopy.Pop();
-        if (amount.startDate > start)
-        {
+        if (amount.startDate > start) {
           var t = lastdate.Soustract(amount.startDate) * 1.0 / DateTime.DaysInMonth(end.Year, end.Month);
           total += amount.GlobalFee() * lastdate.Soustract(amount.startDate) / DateTime.DaysInMonth(end.Year, end.Month);
           lastdate = amount.startDate;
         }
-        else
-        {
-          if (lastdate.CompareTo(end) != 0)
-          {
+        else {
+          if (lastdate.CompareTo(end) != 0) {
             total += amount.GlobalFee()
               * lastdate.Soustract(start)
               / DateTime.DaysInMonth(end.Year, end.Month);
           }
-          else
-          {
+          else {
             total += amount.GlobalFee();
           }
         }
       } while (amount.startDate > start);
       return total;
     }
-    public void UpdateAmount(Amount amount)
-    {
+    public void UpdateAmount(Amount amount) {
       Amounts.Add(amount);
     }
-    public void AddExtraExpense(Intervention intervention)
-    {
+    public void AddExtraExpense(Intervention intervention) {
       Interventions.Add(intervention);
     }
-    public void DeclareRestitutionDate(DateOnly RestitionDate)
-    {
+    public void DeclareRestitutionDate(DateOnly RestitionDate) {
       ExitDate = RestitionDate;
     }
-    public RentBill BuildRestitutionBill()
-    {
-      if (ExitDate != DateOnly.MinValue)
-      {
+    public RentBill BuildRestitutionBill() {
+      if (ExitDate != DateOnly.MinValue) {
         return AddBill(ExitDate.AddDays(-ExitDate.Day + 1), ExitDate.AddDays(-ExitDate.Day).AddMonths(1));
       }
       throw new Exception("No ExitDateFound");
     }
 
-    public void GenerateFacturation(DateOnly date)
-    {
+    public void GenerateFacturation(DateOnly date) {
       int year = date.Year;
       int month = date.Month;
       // idempotence
-      if (RentBills.FirstOrDefault(x => x.IsFacturationDate(date)) != null)
-      {
+      if (RentBills.FirstOrDefault(x => x.IsFacturationDate(date)) != null) {
         return;
       }
 
@@ -94,11 +73,9 @@ namespace HouseLib.Rents
       RentBills.Add(AddBill(start, end));
 
     }
-    public RentBill AddBill(DateOnly start, DateOnly end)
-    {
+    public RentBill AddBill(DateOnly start, DateOnly end) {
 
-      return new RentBill
-      {
+      return new RentBill {
         RentId = Id,
         end = end,
         start = start,
@@ -108,13 +85,10 @@ namespace HouseLib.Rents
       };
     }
 
-
-    public IList<RentBill> GetAllBill()
-    {
+    public IList<RentBill> GetAllBill() {
       return RentBills;
     }
-    public string DisplayLastBill()
-    {
+    public string DisplayLastBill() {
       return RentBills.Last().ToString();
     }
 
